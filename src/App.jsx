@@ -9,6 +9,7 @@ import DoctorDetailPage from './pages/DoctorDetailPage'
 import AppointmentsPage from './pages/AppointmentsPage'
 import AppointmentDetailPage from './pages/AppointmentDetailPage'
 import DashboardPage from './pages/DashboardPage'
+import DoctorDashboard from './pages/DoctorDashboard'
 import ProfilePage from './pages/ProfilePage'
 import './App.css'
 
@@ -35,6 +36,7 @@ function AppRoutes() {
         <Route path="/appointments" element={<PrivateRoute><AppointmentsPage /></PrivateRoute>} />
         <Route path="/appointments/:id" element={<PrivateRoute><AppointmentDetailPage /></PrivateRoute>} />
         <Route path="/dashboard" element={<PrivateRoute><DashboardPage /></PrivateRoute>} />
+        <Route path="/doctor-dashboard" element={<PrivateRoute><DoctorDashboard /></PrivateRoute>} />
         <Route path="/profile" element={<PrivateRoute><ProfilePage /></PrivateRoute>} />
         <Route path="*" element={<Navigate to="/" replace />} />
       </Routes>

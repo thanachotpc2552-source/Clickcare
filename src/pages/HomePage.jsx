@@ -185,6 +185,70 @@ ${docsText}
 
   const formatDate = (d) => new Date(d).toLocaleDateString('th-TH', { day: 'numeric', month: 'short', year: 'numeric' })
 
+  // Doctors see their own dashboard
+  if (user?.role === 'DOCTOR') {
+    return (
+      <div className="home-page page-content">
+        <div className="home-hero" style={{ background: 'linear-gradient(135deg, #065f46 0%, #059669 50%, #10b981 100%)' }}>
+          <div className="container">
+            <div className="home-hero-inner">
+              <div className="home-hero-text">
+                <p className="home-hero-date">{today}</p>
+                <h1 className="home-hero-title">สวัสดี, <span>{user?.name?.split(' ')[0]}</span> 👨‍⚕️</h1>
+                <p className="home-hero-sub">จัดการคิวผู้ป่วยและนัดหมายของคุณวันนี้</p>
+                <div className="home-hero-actions">
+                  <button className="btn btn-primary btn-lg" onClick={() => navigate('/doctor-dashboard')}>
+                    <Clock size={18} /> ดูคิวผู้ป่วยวันนี้
+                  </button>
+                  <button className="btn" style={{ background: 'rgba(255,255,255,0.15)', color: 'white', border: '1px solid rgba(255,255,255,0.3)' }}
+                    onClick={() => navigate('/appointments')}>
+                    <Calendar size={18} /> ตารางนัดหมาย
+                  </button>
+                </div>
+              </div>
+              <div className="home-hero-illustration">
+                <div className="home-stats-grid">
+                  {stats && <>
+                    <div className="home-stat-card">
+                      <Users size={20} className="home-stat-icon" style={{ color: '#10b981' }} />
+                      <div className="home-stat-num">8</div>
+                      <div className="home-stat-label">ผู้ป่วยวันนี้</div>
+                    </div>
+                    <div className="home-stat-card">
+                      <Calendar size={20} className="home-stat-icon" style={{ color: '#006bcd' }} />
+                      <div className="home-stat-num">3</div>
+                      <div className="home-stat-label">ตรวจแล้ว</div>
+                    </div>
+                    <div className="home-stat-card">
+                      <Clock size={20} className="home-stat-icon" style={{ color: '#f59e0b' }} />
+                      <div className="home-stat-num">5</div>
+                      <div className="home-stat-label">รอตรวจ</div>
+                    </div>
+                    <div className="home-stat-card">
+                      <TrendingUp size={20} className="home-stat-icon" style={{ color: '#8b5cf6' }} />
+                      <div className="home-stat-num">4.8⭐</div>
+                      <div className="home-stat-label">คะแนนรีวิว</div>
+                    </div>
+                  </>}
+                </div>
+              </div>
+            </div>
+          </div>
+        </div>
+        <div className="container" style={{ paddingTop: '2rem', display: 'flex', justifyContent: 'center' }}>
+          <div style={{ maxWidth: 500, width: '100%', textAlign: 'center' }}>
+            <div style={{ fontSize: '3rem', marginBottom: '1rem' }}>🩺</div>
+            <h2 style={{ fontWeight: 700, marginBottom: '0.5rem' }}>ไปที่หน้าจัดการคิวผู้ป่วย</h2>
+            <p style={{ color: 'var(--gray-500)', marginBottom: '1.5rem', fontSize: '0.9rem' }}>ดูคิว, จัดการนัดหมาย และบันทึกผลการตรวจได้ที่นี่</p>
+            <button className="btn btn-primary btn-lg" style={{ justifyContent: 'center', width: '100%' }} onClick={() => navigate('/doctor-dashboard')}>
+              <Clock size={18} /> เข้าสู่หน้าคิวผู้ป่วย
+            </button>
+          </div>
+        </div>
+      </div>
+    )
+  }
+
   return (
     <div className="home-page page-content">
       {/* Hero Banner */}

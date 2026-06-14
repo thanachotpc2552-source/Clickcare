@@ -28,10 +28,11 @@ export default function Navbar() {
 
   const navLinks = [
     { to: '/', label: 'หน้าแรก', icon: <Home size={16} /> },
-    { to: '/doctors', label: 'ค้นหาแพทย์', icon: <Users size={16} /> },
-    { to: '/appointments', label: 'นัดหมาย', icon: <Calendar size={16} /> },
-    ...(user?.role === 'ADMIN' || user?.role === 'DOCTOR' ? [{ to: '/dashboard', label: 'Dashboard', icon: <LayoutDashboard size={16} /> }] : []),
-  ]
+    { to: '/doctors', label: 'ค้นหาแพทย์', icon: <Users size={16} />, hide: user?.role === 'DOCTOR' },
+    { to: '/appointments', label: user?.role === 'DOCTOR' ? 'นัดหมายทั้งหมด' : 'นัดหมาย', icon: <Calendar size={16} /> },
+    ...(user?.role === 'DOCTOR' ? [{ to: '/doctor-dashboard', label: 'คิวผู้ป่วย', icon: <LayoutDashboard size={16} /> }] : []),
+    ...(user?.role === 'ADMIN' ? [{ to: '/dashboard', label: 'Dashboard', icon: <LayoutDashboard size={16} /> }] : []),
+  ].filter(l => !l.hide)
 
   const getRoleBadge = () => {
     if (user?.role === 'VIP') return <span className="badge badge-vip" style={{fontSize:'0.7rem',padding:'0.1rem 0.5rem'}}>VIP</span>

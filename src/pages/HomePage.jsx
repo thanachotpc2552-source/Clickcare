@@ -139,11 +139,16 @@ ${doctorContext}
         }
       )
       const data = await resp.json()
+      
+      if (data.error) {
+        throw new Error(`Google API Error: ${data.error.message || JSON.stringify(data.error)}`)
+      }
+
       let reply = data?.candidates?.[0]?.content?.parts?.[0]?.text
 
       // ถ้า API ตอบกลับมาสั้นผิดปกติ ให้ใช้ NLP แทน
       if (!reply || reply.length < 50) {
-        throw new Error('API response truncated or invalid')
+        throw new Error('API response truncated or invalid. Reply length: ' + (reply ? reply.length : 'undefined'))
       }
 
       setAiChat(c => [...c, { role: 'ai', text: reply }])

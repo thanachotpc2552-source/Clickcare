@@ -34,6 +34,7 @@ export default function HomePage() {
   const [aiChat, setAiChat] = useState([])
   const [aiLoading, setAiLoading] = useState(false)
   const [doctors, setDoctors] = useState([])
+  const [aiRecommendedDoctors, setAiRecommendedDoctors] = useState([])
 
   useEffect(() => {
     // Load upcoming appointments
@@ -111,20 +112,18 @@ ${docsText}
         `${d.name} (${d.department}, ${d.hospital}, ราคา ฿${d.fee}, Rating ${d.rating})`
       ).join('\n')
 
-      const prompt = `คุณเป็น AI แพทย์ผู้ช่วยของ ClickCare ที่ช่วยวิเคราะห์อาการเบื้องต้นและแนะนำแผนกที่ควรพบแพทย์
+      const prompt = `คุณเป็น AI แพทย์ผู้ช่วยของ ClickCare
       
-แพทย์ที่มีในระบบ:
-${doctorContext}
-
 แผนกที่มี: ${deptSummary}
 
 ผู้ใช้บอกว่า: "${userMsg}"
 
-โปรดตอบ:
-1. วิเคราะห์อาการเบื้องต้น (สั้น กระชับ)
-2. แนะนำแผนกที่ควรพบแพทย์
-3. แนะนำแพทย์ 2-3 ท่านที่เหมาะสม (ระบุชื่อ แผนก โรงพยาบาล และราคา)
-4. คำแนะนำเพิ่มเติม
+โปรดตอบโดยทำตามกฎเหล่านี้อย่างเคร่งครัด:
+1. ตอบสั้นๆ กระชับที่สุด เป็น bullet 2-3 ข้อ (วิเคราะห์อาการเบื้องต้น และแนะนำแผนก)
+2. ห้ามตอบยาวเกิน 3-4 บรรทัด
+3. ไม่ต้องแนะนำรายชื่อแพทย์ในข้อความ เพราะระบบจะแสดงให้เอง
+4. **สำคัญมาก**: บรรทัดสุดท้ายของคำตอบ ให้ระบุแผนกภาษาอังกฤษที่ตรงที่สุด (จากรายชื่อแผนกที่มี) ในรูปแบบ: [DEPARTMENT: <ชื่อแผนก>]
+ตัวอย่าง: [DEPARTMENT: General Practice]
 
 หมายเหตุ: นี่คือคำแนะนำเบื้องต้นเท่านั้น ไม่ใช่การวินิจฉัยทางการแพทย์`
 
@@ -151,7 +150,22 @@ ${doctorContext}
         throw new Error('API response truncated or invalid. Reply length: ' + (reply ? reply.length : 'undefined'))
       }
 
+      // Parse department
+      let recommendedDept = null
+      const deptMatch = reply.match(/\[DEPARTMENT:\s*(.+?)\]/i)
+      if (deptMatch) {
+        recommendedDept = deptMatch[1].trim()
+        reply = reply.replace(deptMatch[0], '').trim()
+      }
+
       setAiChat(c => [...c, { role: 'ai', text: reply }])
+
+      if (recommendedDept) {
+        const matchingDocs = doctors.filter(d => 
+          d.department.toLowerCase().includes(recommendedDept.toLowerCase())
+        ).slice(0, 3)
+        if (matchingDocs.length > 0) setAiRecommendedDoctors(matchingDocs)
+      }
     } catch (err) {
       console.warn('Gemini API failed or truncated, falling back to NLP', err)
       let debugInfo = ''
@@ -161,10 +175,16 @@ ${doctorContext}
       else debugInfo = `\n\n[Debug Error: ${err.message} | Key details: ${safeKey}]`
       
       const nlpReply = analyzeSymptomWithNLP(userMsg) + debugInfo
+      // Use NLP's built-in parsing for recommended docs if available (we could extract from NLP, but for now just show text)
       setAiChat(c => [...c, { role: 'ai', text: nlpReply }])
     } finally {
       setAiLoading(false)
     }
+  }
+
+  const closeAiModal = () => {
+    setAiOpen(false)
+    setAiRecommendedDoctors([])
   }
 
   const formatDate = (d) => new Date(d).toLocaleDateString('th-TH', { day: 'numeric', month: 'short', year: 'numeric' })
@@ -320,7 +340,7 @@ ${doctorContext}
 
       {/* AI Chat Modal */}
       {aiOpen && (
-        <div className="modal-overlay" onClick={e => e.target === e.currentTarget && setAiOpen(false)}>
+        <div className="modal-overlay" onClick={e => e.target === e.currentTarget && closeAiModal()}>
           <div className="ai-modal">
             <div className="ai-modal-header">
               <div style={{ display: 'flex', alignItems: 'center', gap: '0.625rem' }}>
@@ -330,7 +350,7 @@ ${doctorContext}
                   <div style={{ fontSize: '0.78rem', color: 'var(--gray-500)' }}>Powered by Gemini</div>
                 </div>
               </div>
-              <button onClick={() => setAiOpen(false)} style={{ color: 'var(--gray-400)' }}><X size={20} /></button>
+              <button onClick={closeAiModal} style={{ color: 'var(--gray-400)' }}><X size={20} /></button>
             </div>
 
             <div className="ai-modal-disclaimer">
@@ -338,47 +358,77 @@ ${doctorContext}
               คำแนะนำเบื้องต้นเท่านั้น ไม่ใช่การวินิจฉัยทางการแพทย์
             </div>
 
-            <div className="ai-chat-area">
-              {aiChat.length === 0 && (
-                <div className="ai-chat-welcome">
-                  <div style={{ fontSize: '2.5rem', marginBottom: '0.75rem' }}>🤖</div>
-                  <p style={{ fontWeight: 600, marginBottom: '0.5rem' }}>สวัสดีครับ! ผมช่วยวิเคราะห์อาการเบื้องต้นได้</p>
-                  <p style={{ fontSize: '0.85rem', color: 'var(--gray-500)' }}>ลองพิมพ์อาการของคุณ เช่น "ปวดหัว เวียนหัว มีไข้" แล้วผมจะแนะนำแพทย์ที่เหมาะสม</p>
-                  <div className="ai-suggestions">
-                    {['ปวดหัวบ่อย', 'ผื่นคัน', 'หัวใจเต้นเร็ว', 'ปวดเข่า'].map(s => (
-                      <button key={s} className="ai-suggestion-btn" onClick={() => { setAiMsg(s) }}>{s}</button>
+            <div className="ai-modal-container">
+              <div className="ai-chat-section">
+                <div className="ai-chat-area">
+                  {aiChat.length === 0 && (
+                    <div className="ai-chat-welcome">
+                      <div style={{ fontSize: '2.5rem', marginBottom: '0.75rem' }}>🤖</div>
+                      <p style={{ fontWeight: 600, marginBottom: '0.5rem' }}>สวัสดีครับ! ผมช่วยวิเคราะห์อาการเบื้องต้นได้</p>
+                      <p style={{ fontSize: '0.85rem', color: 'var(--gray-500)' }}>ลองพิมพ์อาการของคุณ เช่น "ปวดหัว เวียนหัว มีไข้"</p>
+                      <div className="ai-suggestions">
+                        {['ปวดหัวบ่อย', 'ผื่นคัน', 'หัวใจเต้นเร็ว', 'ปวดเข่า'].map(s => (
+                          <button key={s} className="ai-suggestion-btn" onClick={() => { setAiMsg(s) }}>{s}</button>
+                        ))}
+                      </div>
+                    </div>
+                  )}
+                  {aiChat.map((m, i) => (
+                    <div key={i} className={`ai-bubble ${m.role}`}>
+                      {m.role === 'ai' && <div className="ai-bubble-icon">🤖</div>}
+                      <div className="ai-bubble-text" style={{ whiteSpace: 'pre-line' }}>{m.text}</div>
+                    </div>
+                  ))}
+                  {aiLoading && (
+                    <div className="ai-bubble ai">
+                      <div className="ai-bubble-icon">🤖</div>
+                      <div className="ai-bubble-text ai-typing">
+                        <span /><span /><span />
+                      </div>
+                    </div>
+                  )}
+                </div>
+
+                <div className="ai-chat-input">
+                  <input
+                    className="form-input"
+                    placeholder="อธิบายอาการของคุณ..."
+                    value={aiMsg}
+                    onChange={e => setAiMsg(e.target.value)}
+                    onKeyDown={e => e.key === 'Enter' && !e.shiftKey && sendAiMessage()}
+                    style={{ flex: 1 }}
+                  />
+                  <button className="btn btn-primary" onClick={sendAiMessage} disabled={aiLoading || !aiMsg.trim()}>
+                    <Send size={16} />
+                  </button>
+                </div>
+              </div>
+
+              <div className="ai-sidebar">
+                <h4 className="ai-sidebar-title">👨‍⚕️ แพทย์ที่แนะนำ</h4>
+                {aiRecommendedDoctors.length > 0 ? (
+                  <div className="ai-sidebar-list">
+                    {aiRecommendedDoctors.map(d => (
+                      <Link to={`/doctors/${d.id}`} key={d.id} className="ai-sidebar-doc" onClick={closeAiModal}>
+                        <div className="ai-sidebar-doc-avatar">{d.name.charAt(0)}</div>
+                        <div className="ai-sidebar-doc-info">
+                          <div className="ai-sidebar-doc-name">{d.name}</div>
+                          <div className="ai-sidebar-doc-dept">{d.department}</div>
+                          <div className="ai-sidebar-doc-meta">
+                            <span><MapPin size={10} /> {d.hospital}</span>
+                            <span style={{color: 'var(--primary)', fontWeight: 600}}>฿{d.fee}</span>
+                          </div>
+                        </div>
+                      </Link>
                     ))}
                   </div>
-                </div>
-              )}
-              {aiChat.map((m, i) => (
-                <div key={i} className={`ai-bubble ${m.role}`}>
-                  {m.role === 'ai' && <div className="ai-bubble-icon">🤖</div>}
-                  <div className="ai-bubble-text" style={{ whiteSpace: 'pre-line' }}>{m.text}</div>
-                </div>
-              ))}
-              {aiLoading && (
-                <div className="ai-bubble ai">
-                  <div className="ai-bubble-icon">🤖</div>
-                  <div className="ai-bubble-text ai-typing">
-                    <span /><span /><span />
+                ) : (
+                  <div className="ai-sidebar-empty">
+                    <Heart size={24} style={{ color: 'var(--gray-300)', marginBottom: '0.5rem' }} />
+                    <p>ระบบจะแนะนำแพทย์ที่เหมาะสมกับอาการของคุณให้ที่นี่</p>
                   </div>
-                </div>
-              )}
-            </div>
-
-            <div className="ai-chat-input">
-              <input
-                className="form-input"
-                placeholder="อธิบายอาการของคุณ..."
-                value={aiMsg}
-                onChange={e => setAiMsg(e.target.value)}
-                onKeyDown={e => e.key === 'Enter' && !e.shiftKey && sendAiMessage()}
-                style={{ flex: 1 }}
-              />
-              <button className="btn btn-primary" onClick={sendAiMessage} disabled={aiLoading || !aiMsg.trim()}>
-                <Send size={16} />
-              </button>
+                )}
+              </div>
             </div>
           </div>
         </div>

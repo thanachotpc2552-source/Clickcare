@@ -116,8 +116,8 @@
 .ai-modal {
   background: white;
   border-radius: var(--radius-xl);
-  width: 100%;
-  max-width: 560px;
+  width: 95%;
+  max-width: 860px;
   max-height: 85vh;
   display: flex;
   flex-direction: column;
@@ -151,6 +151,17 @@
   font-size: 0.8rem;
   border-bottom: 1px solid #fde68a;
 }
+.ai-modal-container {
+  display: flex;
+  flex: 1;
+  overflow: hidden;
+}
+.ai-chat-section {
+  flex: 1.5;
+  display: flex;
+  flex-direction: column;
+  border-right: 1px solid var(--gray-200);
+}
 .ai-chat-area {
   flex: 1;
   overflow-y: auto;
@@ -159,7 +170,6 @@
   flex-direction: column;
   gap: 0.875rem;
   min-height: 300px;
-  max-height: 420px;
 }
 .ai-chat-welcome { text-align: center; padding: 1.5rem; }
 .ai-suggestions { display: flex; flex-wrap: wrap; gap: 0.5rem; margin-top: 1rem; justify-content: center; }
@@ -212,6 +222,86 @@
   align-items: center;
 }
 
+/* AI Sidebar (Right) */
+.ai-sidebar {
+  flex: 1;
+  background: var(--gray-50);
+  padding: 1.25rem;
+  overflow-y: auto;
+  display: flex;
+  flex-direction: column;
+}
+.ai-sidebar-title {
+  font-size: 0.95rem;
+  font-weight: 700;
+  margin-bottom: 1rem;
+  color: var(--gray-900);
+}
+.ai-sidebar-empty {
+  flex: 1;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  text-align: center;
+  color: var(--gray-500);
+  font-size: 0.85rem;
+  padding: 2rem;
+}
+.ai-sidebar-list {
+  display: flex;
+  flex-direction: column;
+  gap: 0.75rem;
+}
+.ai-sidebar-doc {
+  background: white;
+  border: 1px solid var(--gray-200);
+  border-radius: var(--radius-lg);
+  padding: 0.875rem;
+  display: flex;
+  align-items: center;
+  gap: 0.875rem;
+  text-decoration: none;
+  transition: all var(--transition);
+}
+.ai-sidebar-doc:hover {
+  border-color: var(--primary);
+  transform: translateY(-2px);
+  box-shadow: var(--shadow-sm);
+}
+.ai-sidebar-doc-avatar {
+  width: 40px;
+  height: 40px;
+  border-radius: 50%;
+  background: var(--primary-light);
+  color: var(--primary);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-weight: 700;
+  font-size: 1.1rem;
+  flex-shrink: 0;
+}
+.ai-sidebar-doc-name {
+  font-weight: 600;
+  color: var(--gray-900);
+  font-size: 0.85rem;
+  margin-bottom: 0.125rem;
+}
+.ai-sidebar-doc-dept {
+  font-size: 0.75rem;
+  color: var(--primary);
+  font-weight: 500;
+  margin-bottom: 0.25rem;
+}
+.ai-sidebar-doc-meta {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  font-size: 0.75rem;
+  color: var(--gray-500);
+}
+
 @media (max-width: 1024px) {
   .home-depts-grid { grid-template-columns: repeat(5, 1fr); }
   .home-doctors-grid { grid-template-columns: repeat(2, 1fr); }
@@ -224,4 +314,8 @@
   .home-doctors-grid { grid-template-columns: 1fr; }
   .home-ai-fab span { display: none; }
   .home-ai-fab { padding: 0.875rem; border-radius: 50%; width: 52px; height: 52px; justify-content: center; }
+  
+  .ai-modal-container { flex-direction: column; }
+  .ai-chat-section { border-right: none; border-bottom: 1px solid var(--gray-200); flex: none; height: 350px; }
+  .ai-sidebar { flex: none; min-height: 250px; }
 }

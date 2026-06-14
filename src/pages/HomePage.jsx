@@ -149,7 +149,11 @@ ${doctorContext}
       setAiChat(c => [...c, { role: 'ai', text: reply }])
     } catch (err) {
       console.warn('Gemini API failed or truncated, falling back to NLP', err)
-      const nlpReply = analyzeSymptomWithNLP(userMsg)
+      let debugInfo = ''
+      if (!GEMINI_KEY) debugInfo = '\n\n[Debug: API Key is missing! Please check Vercel Environment Variables]'
+      else debugInfo = `\n\n[Debug Error: ${err.message}]`
+      
+      const nlpReply = analyzeSymptomWithNLP(userMsg) + debugInfo
       setAiChat(c => [...c, { role: 'ai', text: nlpReply }])
     } finally {
       setAiLoading(false)

@@ -1,0 +1,21 @@
+{
+  "name": "ClickCare",
+  "short_name": "ClickCare",
+  "start_url": "/",
+  "display": "standalone",
+  "background_color": "#ffffff",
+  "theme_color": "#006bcd",
+  "description": "ClickCare - Telehealth & Appointment App",
+  "icons": [
+    {
+      "src": "data:image/svg+xml;base64,PHN2ZyB4bWxucz0iaHR0cDovL3d3dy53My5vcmcvMjAwMC9zdmciIHZpZXdCb3g9IjAgMCAyNCAyNCIgZmlsbD0ibm9uZSIgc3Ryb2tlPSIjMDA2YmNkIiBzdHJva2Utd2lkdGg9IjIiIHN0cm9rZS1saW5lY2FwPSJyb3VuZCIgc3Ryb2tlLWxpbmVqb2luPSJyb3VuZCI+PHBhdGggZD0iTTIwLjQyIDEuNzFhNS45OCA1Ljk4IDAgMCAwLTguNDUgMExhMi4wMiAxNGwyLjAyLTJhNS45OCA1Ljk4IDAgMCAxIDguNDUgMEwyMCA0YS45OS45OSAwIDAgMCAwLTEuNDE0em0tNiA2bC00LTRtNC00bDQtNE0xMCAxNGw0LTRtNC00bDQtNCIvPjwvc3ZnPg==",
+      "sizes": "192x192",
+      "type": "image/svg+xml"
+    },
+    {
+      "src": "data:image/svg+xml;base64,PHN2ZyB4bWxucz0iaHR0cDovL3d3dy53My5vcmcvMjAwMC9zdmciIHZpZXdCb3g9IjAgMCAyNCAyNCIgZmlsbD0ibm9uZSIgc3Ryb2tlPSIjMDA2YmNkIiBzdHJva2Utd2lkdGg9IjIiIHN0cm9rZS1saW5lY2FwPSJyb3VuZCIgc3Ryb2tlLWxpbmVqb2luPSJyb3VuZCI+PHBhdGggZD0iTTIwLjQyIDEuNzFhNS45OCA1Ljk4IDAgMCAwLTguNDUgMExhMi4wMiAxNGwyLjAyLTJhNS45OCA1Ljk4IDAgMCAxIDguNDUgMEwyMCA0YS45OS45OSAwIDAgMCAwLTEuNDE0em0tNiA2bC00LTRtNC00bDQtNE0xMCAxNGw0LTRtNC00bDQtNCIvPjwvc3ZnPg==",
+      "sizes": "512x512",
+      "type": "image/svg+xml"
+    }
+  ]
+}

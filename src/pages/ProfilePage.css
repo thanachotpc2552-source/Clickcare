@@ -1,0 +1,56 @@
+.profile-layout {
+  display: grid;
+  grid-template-columns: 2fr 1fr;
+  gap: 1.5rem;
+  align-items: start;
+}
+.profile-main-card { overflow: hidden; }
+.profile-hero {
+  background: linear-gradient(135deg, #004fa3, #006bcd, #0090e0);
+  padding: 2.5rem 2rem;
+  display: flex;
+  align-items: center;
+  gap: 1.5rem;
+}
+.profile-hero-info h2 { font-size: 1.75rem; font-weight: 800; color: white; margin-bottom: 0.25rem; }
+.profile-badges { display: flex; gap: 0.5rem; margin-top: 0.75rem; }
+.profile-info-grid {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 1.25rem;
+  padding: 2rem;
+}
+.profile-info-item {
+  display: flex;
+  align-items: flex-start;
+  gap: 0.875rem;
+}
+.profile-info-icon {
+  width: 36px; height: 36px;
+  border-radius: var(--radius-md);
+  background: var(--gray-100);
+  color: var(--gray-600);
+  display: flex; align-items: center; justify-content: center;
+  flex-shrink: 0;
+}
+.profile-info-label { font-size: 0.78rem; color: var(--gray-500); margin-bottom: 0.2rem; }
+.profile-info-value { font-size: 0.95rem; font-weight: 600; color: var(--gray-900); }
+
+.profile-side { display: flex; flex-direction: column; }
+.profile-med-list { display: flex; flex-direction: column; gap: 1rem; }
+.profile-med-item {
+  display: flex;
+  align-items: flex-start;
+  gap: 0.75rem;
+  padding: 0.875rem;
+  background: var(--gray-50);
+  border-radius: var(--radius-md);
+  border: 1px solid var(--gray-200);
+}
+
+@media (max-width: 768px) {
+  .profile-layout { grid-template-columns: 1fr; }
+  .profile-info-grid { grid-template-columns: 1fr; }
+  .profile-hero { flex-direction: column; text-align: center; }
+  .profile-badges { justify-content: center; }
+}

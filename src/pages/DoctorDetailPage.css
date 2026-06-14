@@ -1,0 +1,35 @@
+.doctor-detail-layout { display: grid; grid-template-columns: 1fr 300px; gap: 1.5rem; align-items: start; }
+.doctor-detail-main { display: flex; flex-direction: column; gap: 1.25rem; }
+.doctor-detail-profile {
+  background: linear-gradient(135deg, #004fa3, #006bcd, #0090e0);
+  padding: 2rem;
+  border: none;
+}
+.doctor-detail-hero { display: flex; align-items: center; gap: 1.5rem; }
+.doctor-detail-hero-info h1 { font-size: 1.5rem; font-weight: 800; color: white; margin-bottom: 0.25rem; }
+.doctor-detail-dept { color: rgba(255,255,255,0.75); font-size: 0.9rem; font-weight: 500; margin-bottom: 0.25rem; }
+.doctor-detail-hospital { display: flex; align-items: center; gap: 0.25rem; color: rgba(255,255,255,0.7); font-size: 0.85rem; margin-bottom: 0.5rem; }
+.doctor-detail-rating { display: flex; align-items: center; gap: 0.375rem; }
+.doctor-detail-rating .stars { color: #fbbf24; font-size: 1rem; }
+.doctor-detail-rating > span:nth-child(2) { color: white; font-weight: 600; }
+.doctor-detail-apt-count { color: rgba(255,255,255,0.6); font-size: 0.8rem; }
+.doctor-detail-info-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 0.875rem; }
+.doctor-detail-info-card { display: flex; align-items: center; gap: 0.875rem; padding: 1.125rem; }
+.doctor-detail-info-icon { width: 40px; height: 40px; border-radius: var(--radius-md); display: flex; align-items: center; justify-content: center; flex-shrink: 0; }
+.doctor-detail-info-label { font-size: 0.75rem; color: var(--gray-500); margin-bottom: 0.2rem; }
+.doctor-detail-info-value { font-size: 0.9rem; font-weight: 600; color: var(--gray-800); }
+
+/* Sidebar */
+.doctor-detail-sidebar { position: sticky; top: calc(var(--navbar-h) + 1rem); }
+.doctor-book-card { padding: 1.5rem; }
+.doctor-book-fee { display: flex; justify-content: space-between; align-items: center; padding-bottom: 1rem; border-bottom: 1px solid var(--gray-200); margin-bottom: 1rem; font-size: 0.875rem; color: var(--gray-600); }
+.doctor-book-features { display: flex; flex-direction: column; gap: 0.5rem; margin-bottom: 1.25rem; }
+.doctor-book-feature { display: flex; align-items: center; gap: 0.5rem; font-size: 0.82rem; color: var(--gray-600); }
+.doctor-book-feature-icon { color: var(--success); flex-shrink: 0; }
+
+@media (max-width: 768px) {
+  .doctor-detail-layout { grid-template-columns: 1fr; }
+  .doctor-detail-sidebar { position: static; }
+  .doctor-detail-info-grid { grid-template-columns: 1fr; }
+  .doctor-detail-hero { flex-direction: column; text-align: center; }
+}

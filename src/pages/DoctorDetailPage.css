@@ -33,3 +33,76 @@
   .doctor-detail-info-grid { grid-template-columns: 1fr; }
   .doctor-detail-hero { flex-direction: column; text-align: center; }
 }
+
+/* Time Slots */
+.time-slots-grid {
+  display: grid;
+  grid-template-columns: repeat(4, 1fr);
+  gap: 0.5rem;
+}
+.time-slot-btn {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 0.2rem;
+  padding: 0.625rem 0.5rem;
+  border-radius: var(--radius-md);
+  border: 1.5px solid var(--gray-200);
+  background: white;
+  cursor: pointer;
+  transition: all var(--transition);
+  font-family: inherit;
+}
+.time-slot-btn:hover:not(.full) {
+  border-color: var(--primary);
+  background: var(--primary-light);
+}
+.time-slot-btn.selected {
+  border-color: var(--primary);
+  background: var(--primary);
+  color: white;
+}
+.time-slot-btn.selected .time-slot-remain { color: rgba(255,255,255,0.8); }
+.time-slot-btn.full {
+  opacity: 0.45;
+  cursor: not-allowed;
+  background: var(--gray-100);
+}
+.time-slot-time { font-size: 0.82rem; font-weight: 700; }
+.time-slot-remain { font-size: 0.7rem; color: var(--gray-500); }
+.time-slot-remain.low { color: #ef4444; font-weight: 600; }
+
+/* Queue Info Card */
+.queue-info-card {
+  background: linear-gradient(135deg, var(--primary-light), #e0f2fe);
+  border: 1.5px solid var(--primary-mid);
+  border-radius: var(--radius-lg);
+  padding: 1rem;
+}
+.queue-info-header {
+  font-weight: 700;
+  font-size: 0.85rem;
+  color: var(--primary);
+  margin-bottom: 0.875rem;
+}
+.queue-info-grid {
+  display: grid;
+  grid-template-columns: repeat(3, 1fr);
+  gap: 0.5rem;
+  text-align: center;
+}
+.queue-info-num {
+  font-size: 1.3rem;
+  font-weight: 800;
+  color: var(--primary);
+  line-height: 1;
+  margin-bottom: 0.25rem;
+}
+.queue-info-label {
+  font-size: 0.72rem;
+  color: var(--gray-600);
+}
+
+@media (max-width: 480px) {
+  .time-slots-grid { grid-template-columns: repeat(3, 1fr); }
+}

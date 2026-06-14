@@ -12,6 +12,16 @@ const SYMPTOMS = ['Chest pain','Headache','Allergy','Sore throat','Flu symptoms'
   'Joint pain','Pregnancy checkup','Acne','Vision problem','Anxiety','Back pain',
   'Toothache','Stomach ache','Skin rash','Sleep disorder','Vaccination','Annual Checkup']
 
+const TIME_SLOTS = [
+  { time: '09:00', label: '09:00 น.' },
+  { time: '10:00', label: '10:00 น.' },
+  { time: '11:00', label: '11:00 น.' },
+  { time: '13:00', label: '13:00 น.' },
+  { time: '14:00', label: '14:00 น.' },
+  { time: '15:00', label: '15:00 น.' },
+  { time: '16:00', label: '16:00 น.' },
+]
+
 export default function DoctorDetailPage() {
   const { id } = useParams()
   const { user, authFetch } = useAuth()
@@ -20,8 +30,22 @@ export default function DoctorDetailPage() {
   const [doctor, setDoctor] = useState(null)
   const [loading, setLoading] = useState(true)
   const [bookOpen, setBookOpen] = useState(false)
-  const [bookForm, setBookForm] = useState({ date: '', symptom: '', consult_type: 'clinic', notes: '' })
+  const [bookForm, setBookForm] = useState({ date: '', time_slot: '', symptom: '', consult_type: 'clinic', notes: '' })
   const [booking, setBooking] = useState(false)
+  const [queueInfo, setQueueInfo] = useState(null)
+
+  // Generate mock queue info when date + time selected
+  useEffect(() => {
+    if (bookForm.date && bookForm.time_slot) {
+      const seed = bookForm.date.charCodeAt(8) + bookForm.time_slot.charCodeAt(1)
+      const currentQueue = (seed % 5) + 1
+      const totalSlots = 8
+      const remaining = totalSlots - currentQueue
+      setQueueInfo({ currentQueue, totalSlots, remaining, waitTime: currentQueue * 15 })
+    } else {
+      setQueueInfo(null)
+    }
+  }, [bookForm.date, bookForm.time_slot])
 
   useEffect(() => {
     authFetch(`/api/doctors/${id}`)
@@ -31,7 +55,7 @@ export default function DoctorDetailPage() {
 
   const handleBook = async (e) => {
     e.preventDefault()
-    if (!bookForm.date || !bookForm.symptom) { toast('กรุณากรอกข้อมูลให้ครบ', 'error'); return }
+    if (!bookForm.date || !bookForm.time_slot || !bookForm.symptom) { toast('กรุณากรอกข้อมูลให้ครบ', 'error'); return }
     setBooking(true)
     try {
       const res = await authFetch('/api/appointments', {
@@ -155,7 +179,6 @@ export default function DoctorDetailPage() {
               <h2 style={{ fontSize: '1.1rem', fontWeight: 700, marginBottom: '0.875rem' }}>เกี่ยวกับแพทย์</h2>
               <p style={{ color: 'var(--gray-600)', lineHeight: 1.8, fontSize: '0.925rem' }}>
                 {doctor.name} เป็นแพทย์ผู้เชี่ยวชาญด้าน {doctor.department} ประจำ {doctor.hospital}
-                มีประสบการณ์การรักษาผู้ป่วยมากกว่า {3 + (parseInt(doctor.doctor_id.replace('doc-', '')) % 15)} ปี
                 ให้บริการทั้งการปรึกษาออนไลน์และที่คลินิก รับผู้ป่วยทุกวัย มีความเชี่ยวชาญในการวินิจฉัยและรักษาโรคในสาขา {doctor.department}
                 โดยใช้เทคนิคและเทคโนโลยีทางการแพทย์ที่ทันสมัย
               </p>
@@ -207,10 +230,57 @@ export default function DoctorDetailPage() {
                     className="form-input"
                     min={new Date().toISOString().split('T')[0]}
                     value={bookForm.date}
-                    onChange={e => setBookForm(f => ({ ...f, date: e.target.value }))}
+                    onChange={e => setBookForm(f => ({ ...f, date: e.target.value, time_slot: '' }))}
                     required
                   />
                 </div>
+                {bookForm.date && (
+                  <div className="form-group">
+                    <label className="form-label">เลือกช่วงเวลา *</label>
+                    <div className="time-slots-grid">
+                      {TIME_SLOTS.map(slot => {
+                        const seed = bookForm.date.charCodeAt(8) + slot.time.charCodeAt(1)
+                        const booked = (seed % 8) + 1
+                        const total = 8
+                        const remaining = total - booked
+                        const isFull = remaining <= 0
+                        return (
+                          <button
+                            type="button"
+                            key={slot.time}
+                            className={`time-slot-btn ${bookForm.time_slot === slot.time ? 'selected' : ''} ${isFull ? 'full' : ''}`}
+                            onClick={() => !isFull && setBookForm(f => ({ ...f, time_slot: slot.time }))}
+                            disabled={isFull}
+                          >
+                            <span className="time-slot-time">{slot.label}</span>
+                            <span className={`time-slot-remain ${remaining <= 2 ? 'low' : ''}`}>
+                              {isFull ? 'เต็ม' : `เหลือ ${remaining} คิว`}
+                            </span>
+                          </button>
+                        )
+                      })}
+                    </div>
+                  </div>
+                )}
+                {queueInfo && (
+                  <div className="queue-info-card">
+                    <div className="queue-info-header">📋 ข้อมูลคิวของคุณ</div>
+                    <div className="queue-info-grid">
+                      <div className="queue-info-item">
+                        <div className="queue-info-num">{queueInfo.currentQueue + 1}</div>
+                        <div className="queue-info-label">ลำดับคิว</div>
+                      </div>
+                      <div className="queue-info-item">
+                        <div className="queue-info-num">~{queueInfo.waitTime} นาที</div>
+                        <div className="queue-info-label">เวลารอโดยประมาณ</div>
+                      </div>
+                      <div className="queue-info-item">
+                        <div className="queue-info-num">{queueInfo.remaining}</div>
+                        <div className="queue-info-label">คิวที่เหลือ</div>
+                      </div>
+                    </div>
+                  </div>
+                )}
                 <div className="form-group">
                   <label className="form-label">อาการ / เหตุผลการมาพบแพทย์ *</label>
                   <select

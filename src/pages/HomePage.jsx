@@ -170,15 +170,8 @@ ${docsText}
         if (matchingDocs.length > 0) setAiRecommendedDoctors(matchingDocs)
       }
     } catch (err) {
-      console.warn('Gemini API failed or truncated, falling back to NLP', err)
-      let debugInfo = ''
-      const safeKey = GEMINI_KEY ? `${GEMINI_KEY.substring(0, 4)}... (length: ${GEMINI_KEY.length})` : 'EMPTY'
-      
-      if (!GEMINI_KEY) debugInfo = `\n\n[Debug: API Key is missing! Key = ${safeKey}]`
-      else debugInfo = `\n\n[Debug Error: ${err.message} | Key details: ${safeKey}]`
-      
-      const nlpReply = analyzeSymptomWithNLP(userMsg) + debugInfo
-      // Use NLP's built-in parsing for recommended docs if available (we could extract from NLP, but for now just show text)
+      console.warn('Gemini API failed, falling back to NLP', err)
+      const nlpReply = analyzeSymptomWithNLP(userMsg)
       setAiChat(c => [...c, { role: 'ai', text: nlpReply }])
     } finally {
       setAiLoading(false)

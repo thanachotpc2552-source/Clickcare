@@ -130,7 +130,7 @@ ${docsText}
 
 หมายเหตุ: นี่คือคำแนะนำเบื้องต้นเท่านั้น ไม่ใช่การวินิจฉัยทางการแพทย์`
 
-      const models = ['gemini-1.5-flash', 'gemini-1.5-flash-8b', 'gemini-1.5-pro']
+      const models = ['gemini-3.5-flash', 'gemini-flash-latest', 'gemini-pro-latest', 'gemini-2.5-flash']
       let data = null
       let lastError = null
 

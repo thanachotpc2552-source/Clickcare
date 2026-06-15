@@ -130,28 +130,47 @@ ${docsText}
 
 หมายเหตุ: นี่คือคำแนะนำเบื้องต้นเท่านั้น ไม่ใช่การวินิจฉัยทางการแพทย์`
 
-      const resp = await fetch(
-        `https://generativelanguage.googleapis.com/v1beta/models/gemini-flash-latest:generateContent?key=${GEMINI_KEY}`,
-        {
-          method: 'POST',
-          headers: { 'Content-Type': 'application/json' },
-          body: JSON.stringify({
-            contents: [{ parts: [{ text: prompt }] }]
-          })
+      const models = ['gemini-1.5-flash', 'gemini-1.5-flash-8b', 'gemini-1.5-pro']
+      let data = null
+      let lastError = null
+
+      for (const model of models) {
+        try {
+          console.log(`Trying Gemini model: ${model}`)
+          const resp = await fetch(
+            `https://generativelanguage.googleapis.com/v1beta/models/${model}:generateContent?key=${GEMINI_KEY}`,
+            {
+              method: 'POST',
+              headers: { 'Content-Type': 'application/json' },
+              body: JSON.stringify({
+                contents: [{ parts: [{ text: prompt }] }]
+              })
+            }
+          )
+          const resJson = await resp.json()
+          
+          if (!resp.ok || resJson.error) {
+            throw new Error(resJson.error?.message || `HTTP ${resp.status} for ${model}`)
+          }
+          
+          const textReply = resJson?.candidates?.[0]?.content?.parts?.[0]?.text
+          if (!textReply || textReply.length < 50) {
+            throw new Error(`Response from ${model} was too short or empty`)
+          }
+          
+          data = resJson
+          break // Success, break out of loop
+        } catch (err) {
+          console.warn(`Gemini model ${model} failed, trying fallback:`, err.message || err)
+          lastError = err
         }
-      )
-      const data = await resp.json()
-      
-      if (data.error) {
-        throw new Error(`Google API Error: ${data.error.message || JSON.stringify(data.error)}`)
+      }
+
+      if (!data) {
+        throw lastError || new Error('All Gemini models failed')
       }
 
       let reply = data?.candidates?.[0]?.content?.parts?.[0]?.text
-
-      // ถ้า API ตอบกลับมาสั้นผิดปกติ ให้ใช้ NLP แทน
-      if (!reply || reply.length < 50) {
-        throw new Error('API response truncated or invalid. Reply length: ' + (reply ? reply.length : 'undefined'))
-      }
 
       // Parse department
       let recommendedDept = null

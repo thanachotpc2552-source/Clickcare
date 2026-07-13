@@ -27,6 +27,7 @@ export default function HomePage() {
   const { toast } = useToast()
   const navigate = useNavigate()
   const [upcomingApts, setUpcomingApts] = useState([])
+  const [doctorApts, setDoctorApts] = useState([])
   const [topDoctors, setTopDoctors] = useState([])
   const [stats, setStats] = useState(null)
   const [aiOpen, setAiOpen] = useState(false)
@@ -37,9 +38,15 @@ export default function HomePage() {
   const [aiRecommendedDoctors, setAiRecommendedDoctors] = useState([])
 
   useEffect(() => {
-    // Load upcoming appointments
-    authFetch(`/api/appointments?user_id=${user.user_id}&status=CONFIRMED`)
-      .then(r => r.success && setUpcomingApts(r.data?.slice(0, 3) || []))
+    if (!user) return
+
+    if (user.role === 'DOCTOR') {
+      authFetch(`/api/appointments?doctor_id=${user.user_id}`)
+        .then(r => r.success && setDoctorApts(r.data || []))
+    } else {
+      authFetch(`/api/appointments?user_id=${user.user_id}&status=CONFIRMED`)
+        .then(r => r.success && setUpcomingApts(r.data?.slice(0, 3) || []))
+    }
 
     // Top doctors
     authFetch('/api/doctors?consult_type=video')
@@ -52,9 +59,19 @@ export default function HomePage() {
     // Stats
     authFetch('/api/stats/overview')
       .then(r => r.success && setStats(r.data))
-  }, [user.user_id])
+  }, [user?.user_id])
 
   const today = new Date().toLocaleDateString('th-TH', { weekday: 'long', day: 'numeric', month: 'long', year: 'numeric' })
+  
+  // Calculate dynamic doctor stats
+  const todayStr = new Date().toISOString().split('T')[0]
+  const todayDoctorApts = doctorApts.filter(a => a.date === todayStr || a.date?.startsWith(todayStr))
+  const docTodayTotal = todayDoctorApts.length
+  const docTodayDone = todayDoctorApts.filter(a => a.status === 'COMPLETED').length
+  const docTodayPending = todayDoctorApts.filter(a => ['PENDING', 'CONFIRMED'].includes(a.status)).length
+  
+  const currentDoctorProfile = doctors.find(d => d.doctor_id === user?.user_id)
+  const docRating = currentDoctorProfile?.rating || 4.8
 
   const analyzeSymptomWithNLP = (text) => {
     const keywords = {
@@ -181,22 +198,22 @@ ${data.adviceTh}
                   {stats && <>
                     <div className="home-stat-card">
                       <Users size={20} className="home-stat-icon" style={{ color: '#10b981' }} />
-                      <div className="home-stat-num">8</div>
+                      <div className="home-stat-num">{docTodayTotal}</div>
                       <div className="home-stat-label">ผู้ป่วยวันนี้</div>
                     </div>
                     <div className="home-stat-card">
                       <Calendar size={20} className="home-stat-icon" style={{ color: '#006bcd' }} />
-                      <div className="home-stat-num">3</div>
+                      <div className="home-stat-num">{docTodayDone}</div>
                       <div className="home-stat-label">ตรวจแล้ว</div>
                     </div>
                     <div className="home-stat-card">
                       <Clock size={20} className="home-stat-icon" style={{ color: '#f59e0b' }} />
-                      <div className="home-stat-num">5</div>
+                      <div className="home-stat-num">{docTodayPending}</div>
                       <div className="home-stat-label">รอตรวจ</div>
                     </div>
                     <div className="home-stat-card">
                       <TrendingUp size={20} className="home-stat-icon" style={{ color: '#8b5cf6' }} />
-                      <div className="home-stat-num">4.8⭐</div>
+                      <div className="home-stat-num">{docRating}⭐</div>
                       <div className="home-stat-label">คะแนนรีวิว</div>
                     </div>
                   </>}
@@ -256,7 +273,7 @@ ${data.adviceTh}
                   </div>
                   <div className="home-stat-card">
                     <Users size={20} className="home-stat-icon" style={{ color: '#00cca9' }} />
-                    <div className="home-stat-num">50</div>
+                    <div className="home-stat-num">{doctors.length || 50}</div>
                     <div className="home-stat-label">แพทย์</div>
                   </div>
                   <div className="home-stat-card">

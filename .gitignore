@@ -1,0 +1,10 @@
+node_modules/
+clickcare-app/node_modules/
+backend/node_modules/
+backend/.env
+.env
+*.db
+*.log
+.DS_Store
+dist/
+clickcare-app/dist/

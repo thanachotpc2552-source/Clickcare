@@ -1,0 +1,10 @@
+{
+  "name": "clickcare-monorepo",
+  "version": "1.0.0",
+  "description": "Clickcare monorepo for React frontend and Express backend",
+  "main": "backend/server.js",
+  "scripts": {
+    "build": "cd clickcare-app && npm install && npm run build",
+    "start": "cd backend && npm start"
+  }
+}

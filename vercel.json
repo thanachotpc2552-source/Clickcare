@@ -1,0 +1,12 @@
+{
+  "version": 2,
+  "builds": [
+    { "src": "backend/server.js", "use": "@vercel/node" },
+    { "src": "clickcare-app/package.json", "use": "@vercel/static-build", "config": { "distDir": "dist" } }
+  ],
+  "routes": [
+    { "src": "/api/(.*)", "dest": "backend/server.js" },
+    { "src": "/assets/(.*)", "dest": "clickcare-app/dist/assets/$1" },
+    { "src": "/(.*)", "dest": "clickcare-app/dist/$1" }
+  ]
+}

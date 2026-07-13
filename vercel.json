@@ -6,7 +6,8 @@
   ],
   "routes": [
     { "src": "/api/(.*)", "dest": "backend/server.js" },
-    { "src": "/assets/(.*)", "dest": "clickcare-app/dist/assets/$1" },
-    { "src": "/(.*)", "dest": "clickcare-app/dist/$1" }
+    { "src": "/assets/(.*)", "dest": "clickcare-app/assets/$1" },
+    { "src": "/(.*)\\.(js|css|png|svg|jpg|jpeg|gif|ico|json|woff|woff2|url)", "dest": "clickcare-app/$1" },
+    { "src": "/(.*)", "dest": "clickcare-app/index.html" }
   ]
 }

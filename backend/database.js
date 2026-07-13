@@ -230,11 +230,26 @@ const dbAdapter = {
 
         // Filter parameters
         let filtered = results;
+        let paramIdx = 0;
+        
         if (sql.includes("a.user_id = ?") || sql.includes("user_id = ?")) {
-          filtered = filtered.filter(a => a.user_id === params[0]);
+          const uid = params[paramIdx++];
+          filtered = filtered.filter(a => a.user_id === uid);
         } else if (sql.includes("a.doctor_id = ?") || sql.includes("doctor_id = ?")) {
-          filtered = filtered.filter(a => a.doctor_id === params[0]);
+          const did = params[paramIdx++];
+          filtered = filtered.filter(a => a.doctor_id === did);
         }
+        if (sql.includes("a.date LIKE ?")) {
+          const datePrefix = params[paramIdx++]?.replace(/%/g, '');
+          if (datePrefix) filtered = filtered.filter(a => a.date?.startsWith(datePrefix));
+        }
+        if (sql.includes("a.status = ?")) {
+          const st = params[paramIdx++];
+          filtered = filtered.filter(a => a.status === st);
+        }
+        
+        // Sort by date descending
+        filtered.sort((a, b) => (b.date || '').localeCompare(a.date || ''));
         
         return safeCallback(null, filtered);
       }

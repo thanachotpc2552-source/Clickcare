@@ -197,7 +197,7 @@ app.get('/api/doctors/:id', (req, res) => {
 
 // Get all appointments with filter
 app.get('/api/appointments', (req, res) => {
-  const { user_id, doctor_id, date } = req.query;
+  const { user_id, doctor_id, date, status } = req.query;
   let query = `
     SELECT a.*, d.name as doctor_name, d.department, d.hospital, d.fee, u.name as user_name, u.allergies as user_allergies, u.chronic_conditions as user_chronic_conditions
     FROM appointments a
@@ -218,6 +218,10 @@ app.get('/api/appointments', (req, res) => {
   if (date) {
     query += " AND a.date LIKE ?";
     params.push(`${date}%`);
+  }
+  if (status) {
+    query += " AND a.status = ?";
+    params.push(status);
   }
 
   query += " ORDER BY a.date DESC";
